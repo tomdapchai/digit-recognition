@@ -1,0 +1,54 @@
+:root {
+    font-size: 16px;
+}
+
+html {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    scroll-behavior: smooth;
+    --bg-color: #d6d4cb;
+}
+
+body {
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@viewport {
+    width: device-width;
+    zoom: 1.0;
+}
+
+/* Path: css\header.css */
+
+h1 {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin: 0;
+    padding: left = 50vw;
+}
+.canvas {
+    align-content: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

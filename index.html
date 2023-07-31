@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+
+<head>
+  <meta property="og:image" content="img/preview.png" />
+  <script src="https://kit.fontawesome.com/a8c6ed706b.js" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Staatliches&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model testing</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+  <link rel="manifest" href="icon/site.webmanifest">
+</head>
+
+<body>
+    <div class="header">
+        <h1>
+            Digit Recognition
+        </h1>
+    </div>
+    <div class="description">
+        <p>
+            This is a simple digit recognition model that uses a convolutional neural network to predict the digit in the image. <br>
+        </p>
+        <p>
+            Draw something here:
+        </p>
+    </div>
+    <div>
+        <script src="script/canvas.js"></script>
+        <script src="script/predict.js"></script>
+        <button id="clear">Clear</button>
+        <button id="predict">Predict</button>
+        <canvas id="canvas" width="500" height="500" style="border:2px solid #000000;"></canvas>
+    </div>
+    <div>
+        <h3>Prediction Result:</h3>
+        <p id="prediction_result">-</p>
+    </div>
+</body>
