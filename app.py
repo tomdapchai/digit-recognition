@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from PIL import Image
 import numpy as np
 import tensorflow as tf
@@ -10,7 +10,7 @@ import subprocess
 
 # Define the Conda environment name
 conda_env = "env_ML"
-
+"""
 # Function to activate Conda environment
 def activate_conda_env():
     process = subprocess.Popen(
@@ -23,11 +23,12 @@ def activate_conda_env():
 
 # Activate the Conda environment before running the Flask app
 activate_conda_env()
-
+"""
 app = Flask(__name__)
 
+
 # Load the trained model
-model = load_model('model/trained_model.h5')
+model = load_model('model/trained_model.keras')
 
 def image_to_matrix(image_path, target_size=(28, 28)):
         # Open the image using PIL
@@ -59,6 +60,7 @@ def image_to_matrix(image_path, target_size=(28, 28)):
 
     return image_array_normalized
 
+
 @app.route('/process_image', methods=['POST'])
 def process_image():
     # Receive the image_data from the frontend
@@ -78,13 +80,25 @@ def process_image():
     image_matrix_batch = np.expand_dims(image_matrix, axis=0)
 
     # Predict the image using the loaded model
-    predict = model.predict(image_matrix_batch)
+    prediction = model.predict(image_matrix_batch)
 
     # Get the predicted class index (class with the highest probability)
-    result = np.argmax(predict[0])
+    result = np.argmax(prediction[0])
 
     # Return the predicted result as a JSON response
     return jsonify({'prediction': result})
 
+@app.route('/')
+def index():
+    return send_file('index.html')
+
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    return send_file(f'css/{filename}')
+
+@app.route('/script/<path:filename>')
+def serve_js(filename):
+    return send_file(f'script/{filename}')
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8000, debug=True)
