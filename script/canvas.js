@@ -8,6 +8,10 @@ window.addEventListener('load', () => {
     canvas.width = screenWidth * 0.35;
     canvas.height = screenWidth * 0.35;
 
+    // Set initial background to white
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     // Variables
     let painting = false;
 
@@ -23,7 +27,8 @@ window.addEventListener('load', () => {
 
     function draw(e) {
         if (!painting) return;
-        ctx.lineWidth = 40;
+        ctx.strokeStyle = "black"; // Set ink color to black
+        ctx.lineWidth = 50;
         ctx.lineCap = "round";
 
         // Adjust the mouse coordinates to match the canvas coordinates
@@ -39,6 +44,10 @@ window.addEventListener('load', () => {
 
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Set background to white again after clearing
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "black"; // Set ink color back to black
     }
 
     // EventListeners

@@ -7,7 +7,6 @@ Created on Sat Jul 29 17:25:17 2023
 
 from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 
 def image_to_matrix(image_path, target_size=(28, 28)):
@@ -38,23 +37,9 @@ def image_to_matrix(image_path, target_size=(28, 28)):
     # Normalize pixel values to be in the [0, 1] range
     image_array_normalized = image_array / 255.0
 
-    # Plot the original and processed images
-    plt.figure(figsize=(8, 4))
-    plt.subplot(1, 2, 1)
-    plt.imshow(grayscale_image, cmap='gray')
-    plt.title('Original Image')
-    plt.axis('off')
-
-    plt.subplot(1, 2, 2)
-    plt.imshow(inverted_image, cmap='gray')
-    plt.title('Processed Image')
-    plt.axis('off')
-
-    plt.show()
-
     return image_array_normalized
 
-model = load_model('trained_model.h5')
+model = load_model('trained_model.keras')
 # Example usage:
 image_path = 'test.png'
 image_matrix = image_to_matrix(image_path)
@@ -66,10 +51,6 @@ predict = model(image_matrix_batch)
 # Get the predicted class index (class with the highest probability)
 result = np.argmax(predict[0])
 
-# Plot the input image and the predicted class
-plt.imshow(image_matrix, cmap='gray')
-plt.title("Predicted: {}".format(result), fontsize=16)
-plt.show()
 
 
 
