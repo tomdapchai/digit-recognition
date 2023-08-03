@@ -3,8 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
 
 <head>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <meta property="og:image" content="img/preview.png" />
     <script src="https://kit.fontawesome.com/a8c6ed706b.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,18 +26,6 @@
 </head>
 
 <body>
-    <script type="text/javascript">
-        async function main() {
-            await pyodide.loadPackage("micropip")
-            const micropip = pyodide.pyimport("micropip")
-            await micropip.install("pillow")
-            await micropip.install("numpy")
-            await micropip.install("keras")
-        }
-    </script>
-    <py-config>
-        packages = ["numpy", "pillow", "keras"]
-      </py-config>
     <div class="header">
         <h1>
             Digit Recognition
@@ -52,75 +39,52 @@
             Draw something here:
         </p>
     </div>
-    <button py-click="current_time()" id="get-time" class="py-button">Get current time</button>
-        <p id="current-time"></p>
-        <py-script>
-            from pyscript import Element
-            import datetime
-
-            def current_time():
-                now = datetime.datetime.now()
-
-                # Get paragraph element by id
-                paragraph = Element("current-time")
-
-                # Add current time to the paragraph element
-                paragraph.write(now.strftime("%Y-%m-%d %H:%M:%S"))
-        </py-script>
     <div>
         <script src="script/canvas.js"></script>
         <button id="clear">Clear</button>
         <canvas id="canvas" style="border:2px solid #000000;"></canvas>
-        <button py-click="predict()" id="predict" class="'py-button">Predict</button>
-        <p>Prediction Result: </p>
-        <p id="prediction_result"></p>
-        <py-script>
+        <script type="module" src="script/predict.js"></script>
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+        <script type="text/python">
+            import pyodide
+            from js import window, document, predict
             from PIL import Image
             import numpy as np
-            from keras.models import load_model
-            
-        </py-script>
-        <py-script>
-            from PIL import Image
-            import numpy as np
-            import base64
-            from keras.models import load_model
-            from pyscript import Element
-            def get_canvas_image(canvas_id):
-                canvas = document.getElementById(canvas_id)
-                if not canvas:
-                    raise ValueError("Canvas element not found.")
-                image_data = canvas.toDataURL("image/png")
-                image_data_base64 = base64.b64encode(image_data.encode())
-                image_data = image_data_base64.decode()
+            print("hello world")
+            def process_image():
+                canvas = window.canvas
+                ctx = window.ctx
+                imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+                image = Image.frombytes('RGBA', (28, 28), imageData)
+                image_matrix = image_to_matrix(image)
+                image_matrix_batch = np.expand_dims(image_matrix, axis=0)
+                predict(image_matrix_batch.tolist())
 
-                image = PIL.Image.open(io.BytesIO(image_data))
-                return image
-
-            def image_to_matrix(pil_image, target_size=(28, 28)):
-                image = pil_image.resize(target_size, Image.LANCZOS)
+            def image_to_matrix(image, target_size=(28, 28)):
+                image = image.resize(target_size, Image.LANCZOS)
                 grayscale_image = image.convert('L')
                 pixel_values = np.array(grayscale_image)
                 num_black_pixels = np.sum(pixel_values == 0)
                 num_white_pixels = np.sum(pixel_values == 255)
                 if num_black_pixels <= num_white_pixels:
-                    # Invert the colors by subtracting the pixel values from 255
                     inverted_image = Image.eval(grayscale_image, lambda x: 255 - x)
                 else:
-                    # No color inversion needed -> keep the original grayscale image
                     inverted_image = grayscale_image
                 image_array = np.array(inverted_image)
                 image_array_normalized = image_array / 255.0
                 return image_array_normalized
 
-            model = load_model('model/trained_model.keras')
+            def setup():
+                predict_button = document.getElementById('predict')
+                predict_button.addEventListener('click', process_image)
 
-            def predict():
-                image_matrix = image_to_matrix(get_canvas_image('canvas'))
-                image_matrix_batch = np.expand_dims(image_matrix, axis = 0)
-                prediction = model(image_matrix_batch)
-                result = np.argmax(prediction[0])
-                Element("prediction_result").write(result)
-        </py-script>
+            pyodide.runPythonAsync(`
+                from js import setup
+                setup()
+            `)
+        </script>
+        <button id="predict">Predict</button>
+        <p>Prediction Result: </p>
+        <p id="prediction_result"></p>
     </div>
 </body>
