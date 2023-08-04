@@ -2,13 +2,11 @@ window.addEventListener('load', () => {
     const canvas = document.querySelector("#canvas");
     const ctx = canvas.getContext("2d");
 
-    // Resize the canvas based on the screen size
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    canvas.width = screenWidth * 0.35;
-    canvas.height = screenWidth * 0.35;
+    canvas.width = 600;
+    canvas.height = 600;
 
-    // Set initial background to white
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 

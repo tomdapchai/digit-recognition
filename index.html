@@ -76,57 +76,33 @@
                     image = image.resize(target_size, Image.LANCZOS)
                     grayscale_image = image.convert('L')
 
-                    # Count the number of black (0) and white (255) pixels
                     pixel_values = np.array(grayscale_image)
                     num_black_pixels = np.sum(pixel_values == 0)
                     num_white_pixels = np.sum(pixel_values == 255)
 
-                    # Determine the color inversion based on pixel counts
                     if num_black_pixels <= num_white_pixels:
-                        # Invert the colors by subtracting the pixel values from 255
                         inverted_image = Image.eval(grayscale_image, lambda x: 255 - x)
                     else:
-                        # No color inversion needed -> keep the original grayscale image
                         inverted_image = grayscale_image
-                    # Convert the PIL Image to a NumPy array
                     image_array = np.array(inverted_image)
-                    # Normalize pixel values to be in the [0, 1] range
                     image_array_normalized = image_array / 255.0
                     return image_array_normalized
 
                 def get_matrix_from_canvas(canvas_id):
                     img = get_image_from_canvas(canvas_id)
                     matrix = image_to_matrix(img)
-                    matrix_batch = np.expand_dims(matrix, axis=0)
+                    matrix_batch = np.expand_dims(matrix, axis =0)
+                    matrix_batch = np.expand_dims(matrix_batch, axis =-1)
+                    matrix_batch = np.expand_dims(matrix_batch, axis =-1)
                     return matrix_batch
             `);
         });
         async function predict() {
-            // Get matrix from canvas using Pyodide
-            console.log("predict clicked");
-            if (typeof tf !== 'undefined') {
-                console.log('TensorFlow.js imported successfully');
-            } 
-            else {
-                console.log('Failed to import TensorFlow.js');
-            }
             const model = await tf.loadLayersModel('model/model.json');
-            console.log("model loaded");
-            model.summary();
-            // check if the matrix shape is correct
-            const matrixShape = await pyodide.runPythonAsync(`str(get_matrix_from_canvas('canvas').shape)`);
-            console.log("matrix shape:", matrixShape);
-            // print out the matrix
-            await pyodide.runPythonAsync(`matrix = get_matrix_from_canvas('canvas')`);
-            const matrixString = await pyodide.runPythonAsync(`
-                np.array2string(matrix)
-            `);
-            console.log(matrixString);
-            // above works great
-
-            // Use TensorFlow.js to make prediction
-            const prediction = model.predict(pyodide.globals.matrix);
-            const predictedValue = prediction.dataSync()[0];
+            let matrix = await pyodide.runPythonAsync(`get_matrix_from_canvas('canvas')`);
+            matrix = tf.tensor4d(matrix, [1, 28, 28, 1]);
+            const prediction = model.predict(matrix);
+            const predictedValue = prediction.argMax(1).dataSync()[0];
             // Display predicted value
             document.getElementById('prediction_result').textContent = predictedValue;
         }
