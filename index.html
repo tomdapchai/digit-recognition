@@ -44,70 +44,79 @@
         <button id="clear">Clear</button>
         <canvas id="canvas" style="border:2px solid #000000;"></canvas>
         <!-- Load TensorFlow.js -->
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
         <!-- Load Pyodide -->
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
-        <script>
-            let pyodideReadyPromise = loadPyodide({
-              indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/",
-            });
-    
-            async function runPython() {
-              await pyodideReadyPromise;
-              // Import a Python module
-              let numpy = await pyodide.loadPackage('numpy');
-              let pyodide = await pyodide.loadPackage('pyodide');
-              let PIL = await pyodide.loadPackage('Pillow');
-              // Run Python code
-              let result = pyodide.runPython(`
-                import numpy as np
-                from js import window, document, predict
-                from PIL import Image
-    
-                def process_image():
-                    canvas = window.canvas
-                    ctx = window.ctx
-                    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-                    image = Image.frombytes('RGBA', (28, 28), imageData)
-                    image_matrix = image_to_matrix(image)
-                    image_matrix_batch = np.expand_dims(image_matrix, axis=0)
-                    predict(image_matrix_batch.tolist())
-    
-                def image_to_matrix(image, target_size=(28, 28)):
-                    image = image.resize(target_size, Image.LANCZOS)
-                    grayscale_image = image.convert('L')
-                    pixel_values = np.array(grayscale_image)
-                    num_black_pixels = np.sum(pixel_values == 0)
-                    num_white_pixels = np.sum(pixel_values == 255)
-                    if num_black_pixels <= num_white_pixels:
-                        inverted_image = Image.eval(grayscale_image, lambda x: 255 - x)
-                    else:
-                        inverted_image = grayscale_image
-                    image_array = np.array(inverted_image)
-                    image_array_normalized = image_array / 255.0
-                    return image_array_normalized
-    
-                predict_button = document.getElementById('predict')
-                predict_button.addEventListener('click', process_image)
-              `);
-            }
-    
-            runPython();
-    
-            async function predict(imageData) {
-              // Load the pre-trained model
-              const model = await tf.loadLayersModel('model/model.json');
-              // Convert the image data to a tensor
-              const tensor = tf.tensor(imageData);
-              // Make a prediction using the model
-              const prediction = model.predict(tensor);
-              // Display the prediction result
-              document.getElementById('prediction_result').innerHTML = prediction;
-            }
-        </script>
         <button id="predict">Predict</button>
         <p>Prediction Result: </p>
         <p id="prediction_result"></p>
+        <script>
+        function check() {
+            console.log("check");
+        }            
+        const predictButton = document.querySelector('#predict');
+        predictButton.addEventListener('click', check);
+            // Load Pyodide
+        languagePluginLoader.then(() => {
+            
+            // Define Python code
+            pyodide.runPython(`
+                import io
+                import numpy as np
+                from PIL import Image
+
+                def get_image_from_canvas(canvas_id):
+                    canvas = document.getElementById(canvas_id)
+                    img_data = canvas.toDataURL('image/png')
+                    img_file = io.BytesIO(img_data)
+                    img = Image.open(img_file)
+                    return img
+
+                    def image_to_matrix(image, target_size=(28, 28)):
+                        image = image.resize(target_size, Image.LANCZOS)
+                        grayscale_image = image.convert('L')
+
+                        # Count the number of black (0) and white (255) pixels
+                        pixel_values = np.array(grayscale_image)
+                        num_black_pixels = np.sum(pixel_values == 0)
+                        num_white_pixels = np.sum(pixel_values == 255)
+
+                        # Determine the color inversion based on pixel counts
+                        if num_black_pixels <= num_white_pixels:
+                            # Invert the colors by subtracting the pixel values from 255
+                            inverted_image = Image.eval(grayscale_image, lambda x: 255 - x)
+                        else:
+                            # No color inversion needed -> keep the original grayscale image
+                            inverted_image = grayscale_image
+                        # Convert the PIL Image to a NumPy array
+                        image_array = np.array(inverted_image)
+                        # Normalize pixel values to be in the [0, 1] range
+                        image_array_normalized = image_array / 255.0
+                        return image_array_normalized
+
+                def get_matrix_from_canvas(canvas_id):
+                    img = get_image_from_canvas(canvas_id)
+                    matrix = image_to_matrix(img)
+                    matrix_batch = np.expand_dims(matrix, axis=0)
+                    return matrix_batch
+            `);
+        });
+        // Load TensorFlow.js
+        // Add event listener to "Predict" button
+        predictButton.addEventListener('click', async () => {
+            // Get matrix from canvas using Pyodide
+            console.log("predict clicked");
+            const model = await tf.loadLayersModel('model/model.json');
+            const matrix = await pyodide.runPythonAsync(`
+                get_matrix_from_canvas('canvas')
+            `);
+            // Use TensorFlow.js to make prediction
+            const prediction = model.predict(matrix);
+            const predictedValue = prediction.dataSync()[0];
+            // Display predicted value
+            document.getElementById('prediction_result').textContent = predictedValue;
+        });
+        </script>
     </div>
     
     

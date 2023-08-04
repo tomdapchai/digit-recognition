@@ -43,7 +43,7 @@ window.addEventListener('load', () => {
     }
 
     function clearCanvas() {
-        console.log("clearing canvas")
+        console.log("clearing canvas");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Set background to white again after clearing
         ctx.fillStyle = "white";
