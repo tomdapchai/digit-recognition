@@ -4,8 +4,8 @@ window.addEventListener('load', () => {
 
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    canvas.width = screenWidth * 0.35;
-    canvas.height = screenWidth * 0.35;
+    canvas.width = 600;
+    canvas.height = 600;
 
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
