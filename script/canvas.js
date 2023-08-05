@@ -41,12 +41,13 @@ window.addEventListener('load', () => {
     }
 
     function clearCanvas() {
-        console.log("clearing canvas");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         // Set background to white again after clearing
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "black"; // Set ink color back to black
+        const predictionResultElement = document.querySelector("#prediction_result");
+        predictionResultElement.textContent = "-";
     }
 
     // EventListeners
