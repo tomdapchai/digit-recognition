@@ -56,3 +56,46 @@ p {
 #prediction_result {
     font-size: 3rem;
 }
+
+#example{
+    position: relative;
+    margin: 0 auto;
+    font-size: 1rem;
+    width: max-content;
+}
+
+#example::after{
+    z-index: 100;
+    content: url(../img/sample.png);
+    background-image: url(../img/sample.png);
+    background-size: 602px 602px;
+    display: block;
+    position: absolute;
+    top: 100%;
+    width: 602px;
+    height: 602px;
+    content: "";
+    transform: scale(0);
+    transition: ease-in-out 300ms;
+}
+
+#example:hover::after{
+    transform: scale(1);
+}
+
+#example:hover{
+    cursor: pointer;
+}
+button{
+    font-size: 1rem;
+    background: #EE6352;
+    padding: 0.2vw 0.5vw;
+}
+
+button:hover{
+    cursor: pointer;
+    background: #E93820;
+    -webkit-transform: scale(0.97);
+    -ms-transform: scale(0.97);
+    transform: scale(0.97);
+}
