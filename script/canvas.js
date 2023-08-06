@@ -10,7 +10,6 @@ window.addEventListener('load', () => {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Variables
     let painting = false;
 
     function startPosition(e) {
@@ -25,16 +24,14 @@ window.addEventListener('load', () => {
 
     function draw(e) {
         if (!painting) return;
-        ctx.strokeStyle = "black"; // Set ink color to black
+        ctx.strokeStyle = "black";
         ctx.lineWidth = 50;
         ctx.lineCap = "round";
 
-        // Check if the event is a touch event or mouse event
         const touchEvent = e.type === "touchmove" || e.type === "touchstart" || e.type === "touchend";
         const x = touchEvent ? e.touches[0].clientX : e.clientX;
         const y = touchEvent ? e.touches[0].clientY : e.clientY;
 
-        // Adjust the coordinates to match the canvas
         const rect = canvas.getBoundingClientRect();
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
@@ -43,8 +40,6 @@ window.addEventListener('load', () => {
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(canvasX, canvasY);
-
-        // Prevent page scrolling on mobile while drawing
         e.preventDefault();
     }
 
